@@ -2,10 +2,10 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
   name: 'SelfHostedPool'  # Nome do pool onde o agente self-hosted está registrado
   demands:
-  - agent.name -equals [UbuntuVM]
+    - agent.name -equals UbuntuVM  # Certifique-se de usar o nome correto do agente
+
 
 variables:
   buildConfiguration: 'Release'
