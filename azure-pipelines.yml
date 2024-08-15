@@ -24,14 +24,14 @@ steps:
 
 - task: CopyFilesOverSSH@0
   inputs:
-    sshEndpoint: 'NomeDoEndpoint'
+    sshEndpoint: 'DeployVM'
     sourceFolder: '$(Build.SourcesDirectory)/publish'
     targetFolder: '$(vmPath)'
     cleanTargetFolder: true
 
 - task: SSH@0
   inputs:
-    sshEndpoint: 'NomeDoEndpoint'
+    sshEndpoint: 'DeployVM'
     script: |
       sudo systemctl stop nginx
       sudo cp -r $(vmPath)/* /var/www/meusite
