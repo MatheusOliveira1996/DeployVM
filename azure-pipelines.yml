@@ -1,0 +1,40 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  vmIp: '20.206.146.25'  # Substitua pelo IP da sua VM
+  vmUsername: 'mpnroot'  # Substitua pelo usuário da VM
+  vmPath: '/var/www/meusite'  # Caminho na VM onde o app será colocado
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '6.x' # Versão do .NET
+
+- script: |
+    dotnet restore
+    dotnet build --configuration $(buildConfiguration)
+    dotnet publish --configuration $(buildConfiguration) --output ./publish
+  displayName: 'Build and Publish the App'
+
+- task: CopyFilesOverSSH@0
+  inputs:
+    sshEndpoint: 'NomeDoEndpoint'
+    sourceFolder: '$(Build.SourcesDirectory)/publish'
+    targetFolder: '$(vmPath)'
+    cleanTargetFolder: true
+
+- task: SSH@0
+  inputs:
+    sshEndpoint: 'NomeDoEndpoint'
+    script: |
+      sudo systemctl stop nginx
+      sudo cp -r $(vmPath)/* /var/www/meusite
+      sudo systemctl start nginx
+  displayName: 'Deploy and Restart Nginx'
+
